@@ -1,1 +1,1 @@
-# schibsted
+# schibsted app

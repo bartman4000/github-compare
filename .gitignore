@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+.gitignore
+.idea/modules.xml
+.idea/schibsted.iml
+.idea/workspace.xml
+src/composer.lock
+src/vendor/

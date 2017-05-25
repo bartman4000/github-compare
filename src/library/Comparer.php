@@ -67,5 +67,9 @@ class Comparer
         $this->compareValue($obj1, $obj2, 'pullRequestClosed', Comparer::POINTS_PULLCLOSED);
 
         $this->compareValue($obj1, $obj2, 'lastMerge', Comparer::POINTS_LASTMERGE);
+
+        $sumPoints = $obj1->points + $obj2->points;
+        $obj1->percent = round(($obj1->points/$sumPoints)*100);
+        $obj2->percent = 100-$obj1->percent;
     }
 }

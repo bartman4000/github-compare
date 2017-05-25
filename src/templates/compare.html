@@ -6,18 +6,33 @@
 
 {% block content %}
 
-<form method="POST" action="compare">
-    <div class="form-group">
-        <label for="repo1">Repo1</label>
-        <input type="text" class="form-control" name="repo1" id="repo1" placeholder="Repo #1">
+<div class="jumbotron">
+    <h1>Github Repositories Comparison</h1>
+    <p class="lead">Just type in 2 any github repositories to get their statistics and comparison. Based on criteria below it will help you to choose better open source software.</p>
+</div>
+
+<form method="POST" action="/">
+<div class="row marketing">
+    <div class="col-lg-6">
+        <h4>First repository</h4>
+        <p>repository name in format [owner]/[name] example: 'schibsted/sdk-ios'</p>
+
+        <div class="form-group">
+            <input type="text" class="form-control" name="repo1" id="repo1" value="schibsted/sdk-ios" placeholder="owner/name">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+
     </div>
 
-    <div class="form-group">
-        <label for="repo2">Repo2</label>
-        <input type="text" class="form-control" name="repo2" id="repo2" placeholder="Repo #1">
-    </div>
+    <div class="col-lg-6">
+        <h4>Second repository</h4>
+        <p>repository name in format [owner]/[name] example: 'schibsted/sdk-ios'</p>
 
-    <button type="submit" class="btn btn-default">Submit</button>
+        <div class="form-group">
+            <input type="text" class="form-control" name="repo2" id="repo2 "value="schibsted/spid-tech-docs" placeholder="owner/name">
+        </div>
+    </div>
+</div>
 </form>
 
 {% endblock %}

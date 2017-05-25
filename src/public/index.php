@@ -5,11 +5,16 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 require '../vendor/autoload.php';
 
-$app = new \Slim\App;
-$container = $app->getContainer();
+$container = new \Slim\Container;
+$container['cache'] = function () {
+    return new \Slim\HttpCache\CacheProvider();
+};
+
+$app = new \Slim\App($container);
+$app->add(new \Slim\HttpCache\Cache('public', 86400));
 
 $container['logger'] = function($c) {
-    $logger = new \Monolog\Logger('my_logger');
+    $logger = new \Monolog\Logger('Slim');
     $file_handler = new \Monolog\Handler\StreamHandler("../logs/app.log");
     $logger->pushHandler($file_handler);
     return $logger;
@@ -26,8 +31,7 @@ $container['view'] = function ($container) {
     return $view;
 };
 
-
-
+//Hello
 $app->get('/hello/{name}', function (Request $request, Response $response, $args) {
     $this->logger->addInfo("/hello route started");
 
@@ -38,19 +42,38 @@ $app->get('/hello/{name}', function (Request $request, Response $response, $args
 
 })->setName('hello');
 
-$app->get('/compare', function (Request $request, Response $response, $args) {
-    $this->logger->addInfo("/compare route started");
+//Get root
+$app->get('/', function (Request $request, Response $response, $args) {
+    $this->logger->addInfo("/main route started");
 
     return $this->view->render($response, 'compare.html', [
+        'title' => 'Hello'
     ]);
 
 })->setName('compare');
 
-$app->post('/compare', function (Request $request, Response $response, $args) {
 
-    $response->getBody()->write('ok');
+//Post root
+$app->post('/', function (Request $request, Response $response, $args) {
 
-})->setName('compare');
+    $resWithExpires = $this->cache->withExpires($response, time() + 3600);
+
+    $allPostVars = $request->getParsedBody();
+    $repo1 = $allPostVars['repo1'];
+    $repo2 = $allPostVars['repo2'];
+
+    $Comparer = new \SchibstedApp\Comparer();
+    $obj1 = $Comparer->buildRepoObject($repo1);
+    $obj2 = $Comparer->buildRepoObject($repo2);
+    $data = $Comparer->compareStatistics($obj1,$obj2);
+
+    return $this->view->render($resWithExpires, 'compared.html', [
+        'winner' => $data['winner'],
+        'title' => 'Results',
+        'repo1' => $data['comparison']['repo1'],
+        'repo2' => $data['comparison']['repo2']
+    ]);
+})->setName('compared');
 
 
 $app->run();

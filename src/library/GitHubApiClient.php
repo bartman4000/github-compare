@@ -9,12 +9,22 @@
 namespace SchibstedApp;
 
 use GuzzleHttp;
+use Monolog;
 
 class GitHubApiClient
 {
     const PULL_STATE_OPEN = 'open';
     const PULL_STATE_CLOSED = 'closed';
     const PULL_STATE_ALL = 'all';
+
+    private $logger;
+
+    public function __construct()
+    {
+        $this->logger = new \Monolog\Logger('GitHubApiClient');
+        $file_handler = new \Monolog\Handler\StreamHandler("../logs/app.log");
+        $this->logger->pushHandler($file_handler);
+    }
 
     public function call($method,$resource)
     {
@@ -25,7 +35,12 @@ class GitHubApiClient
             'auth' => ['bartman4000', 'k00paa12']
         );
 
+        $this->logger->addInfo("Github resource called:".$resource);
         $response = $Client->request($method, "https://api.github.com".$resource, $options);
+
+        $this->logger->addDebug($response->getStatusCode());
+        $this->logger->addDebug($response->getReasonPhrase());
+
         return $response->getBody()->getContents();
     }
 
@@ -64,9 +79,22 @@ class GitHubApiClient
 
     public function getLatestReleaseDate($owner, $repo)
     {
-        $content = $this->get("/repos/{$owner}/{$repo}/releases/latest");
-        $content = json_decode($content);
-        return $content->published_at;
+        try {
+            $content = $this->get("/repos/{$owner}/{$repo}/releases/latest");
+            $content = json_decode($content);
+        } catch (GuzzleHttp\Exception\ClientException $e)
+        {
+            $this->logger->addWarning($e->getMessage());
+            if($e->getCode() == 404)
+            {
+                return null;
+            }
+            else{
+                throw new \Exception($e->getMessage(), $e->getCode(), $e);
+            }
+        }
+        $date = new \DateTime($content->published_at);
+        return $date->format("Y-m-d H:i:s");
     }
 
     public function getLastMergeDate($owner, $repo)
@@ -80,7 +108,9 @@ class GitHubApiClient
         {
             $mergeTimes[] = $pull->merged_at;
         }
-        return array_pop($mergeTimes);
+        $mergeTime = array_pop($mergeTimes);
+        $date = new \DateTime($mergeTime);
+        return $date->format("Y-m-d H:i:s");
     }
 
     public function getMergedPulls($owner, $repo)

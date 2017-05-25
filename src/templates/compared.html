@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1>Github Repositories Comparison</h1>
+    <p class="lead">Winner: {{winner}}</p>
+</div>
+
+<form method="POST" action="/">
+<div class="row marketing">
+    <div class="col-lg-6">
+        <h4>{{repo1.name}}</h4>
+        <p><span>Forks</span> <b> {{repo1.forks}}</b></p>
+        <p><span>Stars</span> <b> {{repo1.stars}}</b></p>
+        <p><span>Watchers</span> <b> {{repo1.watchers}}</b></p>
+        <p><span>Latest release date</span> <b> {{repo1.latestRelease}}</b></p>
+        <p><span>Opened pull requests</span> <b> {{repo1.pullRequestOpen}}</b></p>
+        <p><span>Closed pull requests</span> <b> {{repo1.pullRequestClosed}}</b></p>
+        <p><span>Last merge date</span> <b> {{repo1.lastMerge}}</b></p>
+        <p class="bg-info"><span>Score</span> <b> {{repo1.percent}}%</b></p>
+    </div>
+
+    <div class="col-lg-6">
+        <h4>{{repo2.name}}</h4>
+        <p><span>Forks</span> <b> {{repo2.forks}}</b></p>
+        <p><span>Stars</span> <b> {{repo2.stars}}</b></p>
+        <p><span>Watchers</span> <b> {{repo2.watchers}}</b></p>
+        <p><span>Latest release date</span> <b> {{repo2.latestRelease}}</b></p>
+        <p><span>Opened pull requests</span> <b> {{repo2.pullRequestOpen}}</b></p>
+        <p><span>Closed pull requests</span> <b> {{repo2.pullRequestClosed}}</b></p>
+        <p><span>Last merge date</span> <b> {{repo2.lastMerge}}</b></p>
+        <p class="bg-info"><span>Score</span> <b> {{repo2.percent}}%</b></p>
+    </div>
+</div>
+</form>
+
+{% endblock %}

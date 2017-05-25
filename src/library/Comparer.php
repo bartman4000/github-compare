@@ -71,5 +71,9 @@ class Comparer
         $sumPoints = $obj1->points + $obj2->points;
         $obj1->percent = round(($obj1->points/$sumPoints)*100);
         $obj2->percent = 100-$obj1->percent;
+
+        $winner = $obj1->percent == $obj2->percent ? "draw" : ($obj1->percent > $obj2->percent ? $obj1->name : $obj2->name);
+
+        return array('comparison' => array('repo1' => $obj1, 'repo2' => $obj2), 'winner' => $winner);
     }
 }

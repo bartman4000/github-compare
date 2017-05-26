@@ -1,8 +1,8 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use SchibstedApp\GitHubApiClient;
-use SchibstedApp\Comparer;
+use GitHubCompare\GitHubApiClient;
+use GitHubCompare\Comparer;
 
 class ComparerTest extends TestCase
 {

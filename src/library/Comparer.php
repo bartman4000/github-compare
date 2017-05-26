@@ -6,9 +6,7 @@
  * Time: 17:06
  */
 
-namespace SchibstedApp;
-
-use SchibstedApp\GitHubApiClient;
+namespace GitHubCompare;
 
 class Comparer
 {
@@ -49,12 +47,21 @@ class Comparer
      *       )
      * )
      */
+
+    /**
+     * @param string $repoName [name of Github repository]
+     * @return bool|\stdClass [StdClass representing Repo statistics]
+     */
     public function buildRepoObject($repoName)
     {
         $GitHubClient = new GitHubApiClient();
         $Cache = new Cache();
 
-        list($owner, $repo) = explode("/", $repoName, 2);
+        if(!list($owner, $repo) = explode("/", $repoName, 2))
+        {
+            return false;
+        }
+
         $repoObject = new \stdClass();
 
         if($Cache->isCache($owner, $repo))
@@ -86,6 +93,12 @@ class Comparer
         return $repoObject;
     }
 
+    /**
+     * @param \StdClass $obj1
+     * @param \StdClass $obj2
+     * @param string|int $value
+     * @param int $scoring
+     */
     protected function compareValue(&$obj1, &$obj2, $value, $scoring)
     {
         $result = strnatcmp($obj1->{$value}, $obj2->{$value});
@@ -99,6 +112,11 @@ class Comparer
         }
     }
 
+    /**
+     * @param \StdClass $obj1
+     * @param \StdClass $obj2
+     * @return array [Compares repos and return array with results]
+     */
     public function compareStatistics(&$obj1, &$obj2)
     {
         $this->logger->addInfo("compareStatistics");

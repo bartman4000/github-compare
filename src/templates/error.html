@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1>Github Repositories Comparison</h1>
+    <p class="lead">Just type in 2 any github repositories to get their statistics and comparison. Based on criteria like couns of watchers etc. it will help you to choose better open source software.</p>
+</div>
+
+
+<div class="row marketing bg-danger">
+    <div class="col-lg-6">
+    <h4>Error</h4>
+    <p>{{error}}</p>
+    </div>
+</div>
+
+
+{% endblock %}

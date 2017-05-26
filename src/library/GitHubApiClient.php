@@ -6,7 +6,7 @@
  * Time: 10:38
  */
 
-namespace SchibstedApp;
+namespace GitHubCompare;
 
 use GuzzleHttp;
 
@@ -26,6 +26,12 @@ class GitHubApiClient
         $this->logger->pushHandler($file_handler);
     }
 
+    /**
+     * @param string $method
+     * @param string $resource
+     * @return string [resource body content]
+     * @throws \Exception
+     */
     public function call($method,$resource)
     {
         $Client = new GuzzleHttp\Client();
@@ -48,11 +54,21 @@ class GitHubApiClient
         return $response->getBody()->getContents();
     }
 
+    /**
+     * @param string $resource
+     * @return string
+     */
     public function get($resource)
     {
         return $this->call("GET", $resource);
     }
 
+    /**
+     * @param string $owner
+     * @param string $repo
+     * @return bool
+     * @throws \Exception
+     */
     public function isRepo($owner, $repo)
     {
         try {
@@ -70,6 +86,11 @@ class GitHubApiClient
         }
     }
 
+    /**
+     * @param string $owner
+     * @param string $repo
+     * @return int
+     */
     public function getStarsCount($owner, $repo)
     {
         $content = $this->get("/repos/{$owner}/{$repo}/stargazers");
@@ -77,6 +98,11 @@ class GitHubApiClient
         return count($stargazers);
     }
 
+    /**
+     * @param string $owner
+     * @param string $repo
+     * @return int
+     */
     public function getWatchersCount($owner, $repo)
     {
         $content = $this->get("/repos/{$owner}/{$repo}/subscribers");
@@ -84,6 +110,11 @@ class GitHubApiClient
         return count($watchers);
     }
 
+    /**
+     * @param string $owner
+     * @param string $repo
+     * @return int
+     */
     public function getForksCount($owner, $repo)
     {
         $content = $this->get("/repos/{$owner}/{$repo}/forks");
@@ -91,6 +122,11 @@ class GitHubApiClient
         return count($forks);
     }
 
+    /**
+     * @param string $owner
+     * @param string $repo
+     * @return int
+     */
     public function getPullsCount($owner, $repo, $state = self::PULL_STATE_OPEN)
     {
         $content = $this->get("/repos/{$owner}/{$repo}/pulls?state=".$state);
@@ -98,6 +134,12 @@ class GitHubApiClient
         return count($pulls);
     }
 
+    /**
+     * @param string $owner
+     * @param string $repo
+     * @return null|string [date in format Y-m-dTH:i:sZ]
+     * @throws \Exception
+     */
     public function getLatestReleaseDate($owner, $repo)
     {
         try {
@@ -118,6 +160,12 @@ class GitHubApiClient
         return $date->format("Y-m-d H:i:s");
     }
 
+    /**
+     * @param string $owner
+     * @param string $repo
+     * @return null|string [date in format Y-m-dTH:i:sZ]
+     * @throws \Exception
+     */
     public function getLastMergeDate($owner, $repo)
     {
         $mergedPulls = $this->getMergedPulls($owner, $repo);
@@ -135,6 +183,11 @@ class GitHubApiClient
         return $date->format("Y-m-d H:i:s");
     }
 
+    /**
+     * @param string $owner
+     * @param string $repo
+     * @return int
+     */
     public function getMergedPulls($owner, $repo)
     {
         $content = $this->get("/repos/{$owner}/{$repo}/pulls?state=all");
@@ -145,6 +198,11 @@ class GitHubApiClient
         return $mergedPulls;
     }
 
+    /**
+     * @param array $mergedPulls
+     * @param string $direction [ASC|DESC]
+     * @return array
+     */
     public function sortPullsByMergedTime($mergedPulls, $direction = "ASC")
     {
         usort($mergedPulls, function ($a,$b) use ($direction)
@@ -163,6 +221,12 @@ class GitHubApiClient
         return $mergedPulls;
     }
 
+    /**
+     * @param string $owner
+     * @param string $repo
+     * @return null|string [date in format Y-m-dTH:i:sZ]
+     * @throws \Exception
+     */
     public function getUpdateDate($owner, $repo)
     {
         $content = $this->get("/repos/{$owner}/{$repo}");

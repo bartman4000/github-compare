@@ -83,7 +83,6 @@
  * )
  */
 
-
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
@@ -205,7 +204,7 @@ $app->get('/compare', function (Request $request, Response $response) {
     $repo1 = $params['repo1'];
     $repo2 = $params['repo2'];
 
-    $Comparer = new \SchibstedApp\Comparer();
+    $Comparer = new \GitHubCompare\Comparer();
     $obj1 = $Comparer->buildRepoObject($repo1);
     $obj2 = $Comparer->buildRepoObject($repo2);
 

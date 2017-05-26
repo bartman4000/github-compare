@@ -6,7 +6,7 @@
  * Time: 19:00
  */
 
-namespace SchibstedApp;
+namespace GitHubCompare;
 
 use GuzzleHttp;
 
@@ -56,6 +56,6 @@ class InternalApiClient
 
     public function get($resource,$options)
     {
-        return $this->call("GET", $resource,$options);
+        return $this->call("GET", $resource, $options);
     }
 }

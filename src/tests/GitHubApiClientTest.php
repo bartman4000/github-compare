@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use SchibstedApp\GitHubApiClient;
+use GitHubCompare\GitHubApiClient;
 
 class GitHubApiClientTest extends TestCase
 {

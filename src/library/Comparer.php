@@ -19,6 +19,15 @@ class Comparer
     const POINTS_PULLSOPEN = 1;
     const POINTS_PULLCLOSED = 1;
     const POINTS_LASTMERGE = 2;
+    const POINTS_UPDATE = 1;
+
+    public function __construct()
+    {
+        $root = realpath(dirname(__FILE__) . '/../');
+        $this->logger = new \Monolog\Logger('Comparer');
+        $file_handler = new \Monolog\Handler\StreamHandler($root."/logs/app.log");
+        $this->logger->pushHandler($file_handler);
+    }
 
     public function buildRepoObject($repoName)
     {
@@ -35,6 +44,7 @@ class Comparer
         $repoObject->pullRequestOpen = $GitHubClient->getPullsCount($owner, $repo, $GitHubClient::PULL_STATE_OPEN);
         $repoObject->pullRequestClosed = $GitHubClient->getPullsCount($owner, $repo, $GitHubClient::PULL_STATE_CLOSED);
         $repoObject->lastMerge = $GitHubClient->getLastMergeDate($owner, $repo);
+        $repoObject->updateDate = $GitHubClient->getUpdateDate($owner, $repo);
         $repoObject->points = 0;
         return $repoObject;
     }
@@ -54,6 +64,8 @@ class Comparer
 
     public function compareStatistics(&$obj1, &$obj2)
     {
+        $this->logger->addInfo("compareStatistics");
+
         $this->compareValue($obj1, $obj2, 'forks', Comparer::POINTS_FORKS);
 
         $this->compareValue($obj1, $obj2, 'stars', Comparer::POINTS_STARS);
@@ -67,6 +79,8 @@ class Comparer
         $this->compareValue($obj1, $obj2, 'pullRequestClosed', Comparer::POINTS_PULLCLOSED);
 
         $this->compareValue($obj1, $obj2, 'lastMerge', Comparer::POINTS_LASTMERGE);
+
+        $this->compareValue($obj1, $obj2, 'updateDate', Comparer::POINTS_UPDATE);
 
         $sumPoints = $obj1->points + $obj2->points;
         $obj1->percent = round(($obj1->points/$sumPoints)*100);

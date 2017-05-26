@@ -5,14 +5,8 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 require '../vendor/autoload.php';
 
-$container = new \Slim\Container;
-$container['cache'] = function () {
-    return new \Slim\HttpCache\CacheProvider();
-};
-
-$app = new \Slim\App($container);
-$app->add(new \Slim\HttpCache\Cache('public', 86400));
-
+$app = new \Slim\App;
+$container = $app->getContainer();
 $container['logger'] = function($c) {
     $logger = new \Monolog\Logger('Slim');
     $file_handler = new \Monolog\Handler\StreamHandler("../logs/app.log");
@@ -33,7 +27,7 @@ $container['view'] = function ($container) {
 
 //Hello
 $app->get('/hello/{name}', function (Request $request, Response $response, $args) {
-    $this->logger->addInfo("/hello route started");
+    $this->logger->addInfo("GET /hello route");
 
     return $this->view->render($response, 'hello.html', [
         'name' => $args['name'],
@@ -44,7 +38,7 @@ $app->get('/hello/{name}', function (Request $request, Response $response, $args
 
 //Get root
 $app->get('/', function (Request $request, Response $response, $args) {
-    $this->logger->addInfo("/main route started");
+    $this->logger->addInfo("GET / route");
 
     return $this->view->render($response, 'compare.html', [
         'title' => 'Hello'
@@ -56,9 +50,10 @@ $app->get('/', function (Request $request, Response $response, $args) {
 //Post root
 $app->post('/', function (Request $request, Response $response, $args) {
 
-    $resWithExpires = $this->cache->withExpires($response, time() + 3600);
-
+    $this->logger->addInfo("POST / route");
     $allPostVars = $request->getParsedBody();
+    $this->logger->addDebug("PostedVars:".$allPostVars);
+
     $repo1 = $allPostVars['repo1'];
     $repo2 = $allPostVars['repo2'];
 
@@ -67,7 +62,7 @@ $app->post('/', function (Request $request, Response $response, $args) {
     $obj2 = $Comparer->buildRepoObject($repo2);
     $data = $Comparer->compareStatistics($obj1,$obj2);
 
-    return $this->view->render($resWithExpires, 'compared.html', [
+    return $this->view->render($response, 'compared.html', [
         'winner' => $data['winner'],
         'title' => 'Results',
         'repo1' => $data['comparison']['repo1'],

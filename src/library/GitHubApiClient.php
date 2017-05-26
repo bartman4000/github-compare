@@ -9,7 +9,6 @@
 namespace SchibstedApp;
 
 use GuzzleHttp;
-use Monolog;
 
 class GitHubApiClient
 {
@@ -21,8 +20,9 @@ class GitHubApiClient
 
     public function __construct()
     {
+        $root = realpath(dirname(__FILE__) . '/../');
         $this->logger = new \Monolog\Logger('GitHubApiClient');
-        $file_handler = new \Monolog\Handler\StreamHandler("../logs/app.log");
+        $file_handler = new \Monolog\Handler\StreamHandler($root."/logs/app.log");
         $this->logger->pushHandler($file_handler);
     }
 
@@ -35,11 +35,8 @@ class GitHubApiClient
             'auth' => ['bartman4000', 'k00paa12']
         );
 
-        $this->logger->addInfo("Github resource called:".$resource);
         $response = $Client->request($method, "https://api.github.com".$resource, $options);
-
-        $this->logger->addDebug($response->getStatusCode());
-        $this->logger->addDebug($response->getReasonPhrase());
+        $this->logger->addInfo("Called github resource {$resource} with response ".($response->getStatusCode()." ".$response->getReasonPhrase()));
 
         return $response->getBody()->getContents();
     }
@@ -109,6 +106,7 @@ class GitHubApiClient
             $mergeTimes[] = $pull->merged_at;
         }
         $mergeTime = array_pop($mergeTimes);
+        $this->logger->addDebug("mergeTime: {$mergeTime}");
         $date = new \DateTime($mergeTime);
         return $date->format("Y-m-d H:i:s");
     }
@@ -139,5 +137,13 @@ class GitHubApiClient
         });
 
         return $mergedPulls;
+    }
+
+    public function getUpdateDate($owner, $repo)
+    {
+        $content = $this->get("/repos/{$owner}/{$repo}");
+        $content = json_decode($content);
+        $date = new \DateTime($content->updated_at);
+        return $date->format("Y-m-d H:i:s");
     }
 }

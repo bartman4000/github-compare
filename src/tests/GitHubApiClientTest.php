@@ -20,11 +20,11 @@ class GitHubApiClientTest extends TestCase
         $this->testRepo = 'sdk-ios';
     }
 
-//    public function testCall()
-//    {
-//        $content = $this->GitHubApiClient->call('GET','/user/repos');
-//        $this->assertInternalType("array", json_decode($content));
-//    }
+    public function testCall()
+    {
+        $content = $this->GitHubApiClient->call('GET','/user/repos');
+        $this->assertInternalType("array", json_decode($content));
+    }
 
     public function testGetStarsCount()
     {
@@ -55,6 +55,19 @@ class GitHubApiClientTest extends TestCase
     public function testGetLatestReleaseDate()
     {
         $published_at = $this->GitHubApiClient->getLatestReleaseDate($this->testOwner, $this->testRepo);
+
+        try {
+            $date = new DateTime($published_at);
+        } catch (Exception $e) {
+            $date = false;
+        }
+
+        $this->assertInternalType('object', $date);
+    }
+
+    public function testGetUpdateDate()
+    {
+        $published_at = $this->GitHubApiClient->getUpdateDate($this->testOwner, $this->testRepo);
 
         try {
             $date = new DateTime($published_at);

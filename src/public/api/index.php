@@ -3,7 +3,7 @@
 /**
  * @SWG\Swagger(
  *     basePath="/api",
- *     host="localhost:8080",
+ *     host=APP_HOST,
  *     schemes={"http"},
  *     produces={"application/json"},
  *     consumes={"application/json"},
@@ -24,8 +24,14 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 require '../../vendor/autoload.php';
 
-$app = new \Slim\App;
+// Register service provider with the container
+$container = new \Slim\Container;
+$container['cache'] = function () {
+    return new \Slim\HttpCache\CacheProvider();
+};
 
+$app = new \Slim\App($container);
+$app->add(new \Slim\HttpCache\Cache('public', 86400));
 
 
 /**
@@ -42,7 +48,7 @@ $app = new \Slim\App;
  *     ),
  *     @SWG\Response(
  *         response=200,
- *         description="hello response",
+ *         description="Expected hello response",
  *         @SWG\Schema(
  *             type="array",
  *             @SWG\Items(ref="#/definitions/hello")
@@ -61,14 +67,17 @@ $app = new \Slim\App;
 $app->get('/hello', function (Request $request, Response $response) {
 
     $params = $request->getQueryParams();
-    $name = $params['name'];
+    $name = isset($params['name']) ? $params['name'] : "World";
 
     $data = array('info' => 'Github Repositories Comparison Api','message' => "Hello {$name}");
 
     $newResponse = $response->withHeader('Content-type', 'application/json')->withHeader('Access-Control-Allow-Origin','*')->withStatus(200);
-    $newResponse->getBody()->write(json_encode($data));
+    $resWithEtag = $this->cache->withEtag($newResponse, md5(serialize($data)));
+    $resWithExpires = $this->cache->withExpires($resWithEtag, time() + 3600);
+    $resWithLastMod = $this->cache->withLastModified($resWithExpires, time() - 3600);
+    $resWithLastMod->getBody()->write(json_encode($data));
 
-    return $newResponse;
+    return $resWithLastMod;
 });
 
 /**
@@ -92,7 +101,7 @@ $app->get('/hello', function (Request $request, Response $response) {
  *     ),
  *     @SWG\Response(
  *         response=200,
- *         description="Repositories comparison",
+ *         description="Expected repositories comparison",
  *         @SWG\Schema(
  *             type="array",
  *             @SWG\Items(ref="#/definitions/compare")
@@ -120,9 +129,12 @@ $app->get('/compare', function (Request $request, Response $response) {
     $data = $Comparer->compareStatistics($obj1,$obj2);
 
     $newResponse = $response->withHeader('Content-type', 'application/json')->withHeader('Access-Control-Allow-Origin','*')->withStatus(200);
-    $newResponse->getBody()->write(json_encode($data));
+    $resWithEtag = $this->cache->withEtag($newResponse, md5(serialize($data)));
+    $resWithExpires = $this->cache->withExpires($resWithEtag, time() + 3600);
+    $resWithLastMod = $this->cache->withLastModified($resWithExpires, time() - 3600);
+    $resWithLastMod->getBody()->write(json_encode($data));
 
-    return $newResponse;
+    return $resWithLastMod;
 
 });
 $app->run();

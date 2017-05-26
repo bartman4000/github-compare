@@ -1,0 +1,70 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Bartek
+ * Date: 2017-05-26
+ * Time: 19:36
+ */
+
+namespace SchibstedApp;
+
+class Cache
+{
+    const HOUR = 3600;
+    const DAY = 86400;
+
+    protected $cacheDir;
+    private $logger;
+
+    public function __construct()
+    {
+        $this->cacheDir = realpath(dirname(__FILE__) . '/../cache');
+        $root = realpath(dirname(__FILE__) . '/../');
+        $this->logger = new \Monolog\Logger('Cache');
+        $file_handler = new \Monolog\Handler\StreamHandler($root."/logs/app.log");
+        $this->logger->pushHandler($file_handler);
+    }
+
+    public function readCache($owner,$repo)
+    {
+        return file_get_contents($this->getCacheFilePath($owner,$repo));
+    }
+
+    public function saveCache($owner,$repo,$data)
+    {
+        $path = $this->getCacheFilePath($owner,$repo);
+        if($this->isFileWriteable($path))
+        {
+            file_put_contents($path,$data);
+        }
+    }
+
+    public function isCache($owner,$repo)
+    {
+        $path = $this->getCacheFilePath($owner,$repo);
+        if($this->isFileReadable($path))
+        {
+            $updateTimestamp = filemtime($path);
+            if((time() - $updateTimestamp) < Cache::HOUR)
+            {
+                return true;
+            }
+        }
+        return false; //no cache file or cache is over 1 hour old
+    }
+
+    public function getCacheFilePath($owner,$repo)
+    {
+        return $this->cacheDir.'/'.$owner.'-'.$repo.'.json';
+    }
+
+    public function isFileReadable($file)
+    {
+        return file_exists($file) && ($handle = fopen($file, "r")) !== FALSE;
+    }
+
+    public function isFileWriteable($file)
+    {
+        return $handle = fopen($file, "w") !== FALSE;
+    }
+}

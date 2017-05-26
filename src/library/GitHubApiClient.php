@@ -35,10 +35,12 @@ class GitHubApiClient
             'auth' => ['bartman4000', 'k00paa12']
         );
 
+        $url = "https://api.github.com".$resource;
+
         try {
-            $response = $Client->request($method, "https://api.github.com".$resource, $options);
+            $response = $Client->request($method, $url, $options);
         } catch (GuzzleHttp\Exception\ClientException $e) {
-            $this->logger->addWarning("Called github resource {$resource} with response ".($e->getMessage()));
+            $this->logger->addWarning("Called {$url} with response ".($e->getMessage()));
             throw new \Exception($e->getMessage(), $e->getCode(), $e);
         }
 

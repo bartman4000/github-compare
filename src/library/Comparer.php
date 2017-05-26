@@ -52,25 +52,37 @@ class Comparer
     public function buildRepoObject($repoName)
     {
         $GitHubClient = new GitHubApiClient();
+        $Cache = new Cache();
 
         list($owner, $repo) = explode("/", $repoName, 2);
+        $repoObject = new \stdClass();
 
-        if(!$GitHubClient->isRepo($owner, $repo))
+        if($Cache->isCache($owner, $repo))
         {
-            return false;
+            $data = $Cache->readCache($owner, $repo);
+            $repoObject = json_decode($data);
+        }
+        else
+        {
+            if(!$GitHubClient->isRepo($owner, $repo))
+            {
+                return false;
+            }
+
+            $repoObject->name = $repoName;
+            $repoObject->forks = $GitHubClient->getForksCount($owner, $repo);
+            $repoObject->stars = $GitHubClient->getStarsCount($owner, $repo);
+            $repoObject->watchers = $GitHubClient->getWatchersCount($owner, $repo);
+            $repoObject->latestRelease = $GitHubClient->getLatestReleaseDate($owner, $repo);
+            $repoObject->pullRequestOpen = $GitHubClient->getPullsCount($owner, $repo, $GitHubClient::PULL_STATE_OPEN);
+            $repoObject->pullRequestClosed = $GitHubClient->getPullsCount($owner, $repo, $GitHubClient::PULL_STATE_CLOSED);
+            $repoObject->lastMerge = $GitHubClient->getLastMergeDate($owner, $repo);
+            $repoObject->updateDate = $GitHubClient->getUpdateDate($owner, $repo);
+            $repoObject->points = 0;
+
+            $Cache->saveCache($owner, $repo,json_encode($repoObject));
         }
 
-        $repoObject = new \stdClass();
-        $repoObject->name = $repoName;
-        $repoObject->forks = $GitHubClient->getForksCount($owner, $repo);
-        $repoObject->stars = $GitHubClient->getStarsCount($owner, $repo);
-        $repoObject->watchers = $GitHubClient->getWatchersCount($owner, $repo);
-        $repoObject->latestRelease = $GitHubClient->getLatestReleaseDate($owner, $repo);
-        $repoObject->pullRequestOpen = $GitHubClient->getPullsCount($owner, $repo, $GitHubClient::PULL_STATE_OPEN);
-        $repoObject->pullRequestClosed = $GitHubClient->getPullsCount($owner, $repo, $GitHubClient::PULL_STATE_CLOSED);
-        $repoObject->lastMerge = $GitHubClient->getLastMergeDate($owner, $repo);
-        $repoObject->updateDate = $GitHubClient->getUpdateDate($owner, $repo);
-        $repoObject->points = 0;
         return $repoObject;
     }
 

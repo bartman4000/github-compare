@@ -54,10 +54,14 @@ $app->post('/', function (Request $request, Response $response, $args) {
     $repo1 = $allPostVars['repo1'];
     $repo2 = $allPostVars['repo2'];
 
-    $Comparer = new \SchibstedApp\Comparer();
-    $obj1 = $Comparer->buildRepoObject($repo1);
-    $obj2 = $Comparer->buildRepoObject($repo2);
-    $data = $Comparer->compareStatistics($obj1,$obj2);
+//    $Comparer = new \SchibstedApp\Comparer();
+//    $obj1 = $Comparer->buildRepoObject($repo1);
+//    $obj2 = $Comparer->buildRepoObject($repo2);
+//    $data = $Comparer->compareStatistics($obj1,$obj2);
+
+    $ApiClient = new \SchibstedApp\InternalApiClient();
+    $data = $ApiClient->get("/compare", array('query' => array('repo1' => $repo1, 'repo2' => $repo2)));
+
 
     $newResponse = $response->withHeader('Access-Control-Allow-Origin','*')
         ->withStatus(200);

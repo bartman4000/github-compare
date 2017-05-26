@@ -14,6 +14,46 @@
  *         termsOfService="http://swagger.io/terms/",
  *         @SWG\Contact(name="Swagger API Team"),
  *         @SWG\License(name="MIT")
+ *     ),
+ *     @SWG\Definition(
+ *         definition="ErrorModel",
+ *         type="object",
+ *         required={"code", "message"},
+ *         @SWG\Property(
+ *             property="code",
+ *             type="integer",
+ *             format="int32"
+ *         ),
+ *         @SWG\Property(
+ *             property="message",
+ *             type="string"
+ *         )
+ *     ),
+ *     @SWG\Definition(
+ *         definition="Hello",
+ *         type="object",
+ *         required={"info", "message"},
+ *         @SWG\Property(
+ *             property="info",
+ *             type="string"
+ *         ),
+ *         @SWG\Property(
+ *             property="message",
+ *             type="string"
+ *         )
+ *     ),
+ *     @SWG\Definition(
+ *         definition="Comparison",
+ *         type="object",
+ *         required={"comparison", "winner"},
+ *         @SWG\Property(
+ *             property="comparison",
+ *             type="object"
+ *         ),
+ *         @SWG\Property(
+ *             property="winner",
+ *             type="string"
+ *         )
  *     )
  * )
  */
@@ -49,17 +89,12 @@ $app->add(new \Slim\HttpCache\Cache('public', 86400));
  *     @SWG\Response(
  *         response=200,
  *         description="Expected hello response",
- *         @SWG\Schema(
- *             type="array",
- *             @SWG\Items(ref="#/definitions/hello")
- *         ),
+ *         @SWG\Schema(ref="#/definitions/Hello")
  *     ),
  *     @SWG\Response(
  *         response="default",
  *         description="unexpected error",
- *         @SWG\Schema(
- *             ref="#/definitions/ErrorModel"
- *         )
+ *         @SWG\Schema(ref="#/definitions/ErrorModel")
  *     )
  * )
  */
@@ -71,7 +106,10 @@ $app->get('/hello', function (Request $request, Response $response) {
 
     $data = array('info' => 'Github Repositories Comparison Api','message' => "Hello {$name}");
 
-    $newResponse = $response->withHeader('Content-type', 'application/json')->withHeader('Access-Control-Allow-Origin','*')->withStatus(200);
+    $newResponse = $response
+        ->withHeader('Content-type', 'application/json')
+        ->withHeader('Access-Control-Allow-Origin','*')
+        ->withStatus(200);
     $resWithEtag = $this->cache->withEtag($newResponse, md5(serialize($data)));
     $resWithExpires = $this->cache->withExpires($resWithEtag, time() + 3600);
     $resWithLastMod = $this->cache->withLastModified($resWithExpires, time() - 3600);
@@ -102,17 +140,21 @@ $app->get('/hello', function (Request $request, Response $response) {
  *     @SWG\Response(
  *         response=200,
  *         description="Expected repositories comparison",
- *         @SWG\Schema(
- *             type="array",
- *             @SWG\Items(ref="#/definitions/compare")
-*         ),
+ *         @SWG\Schema(ref="#/definitions/Comparison")
+ *     ),
+ *     @SWG\Response(
+ *         response=400,
+ *         description="Not defined repo1 or repo2 params",
+ *         @SWG\Schema(ref="#/definitions/ErrorModel")
+ *     ),
+ *     @SWG\Response(
+ *         response=404,
+ *         description="One of repos is not found",
+ *         @SWG\Schema(ref="#/definitions/ErrorModel")
  *     ),
  *     @SWG\Response(
  *         response="default",
  *         description="unexpected error",
- *         @SWG\Schema(
- *             ref="#/definitions/ErrorModel"
-    *         )
  *     )
  * )
  */
@@ -120,15 +162,47 @@ $app->get('/hello', function (Request $request, Response $response) {
 $app->get('/compare', function (Request $request, Response $response) {
 
     $params = $request->getQueryParams();
+
+    if(!isset($params['repo1']) || !isset($params['repo1']))
+    {
+        $response->getBody()->write(json_encode(array(
+            'code' => 400,
+            'message' => 'Missing repo1 or repo2 params'
+        )));
+
+        $errorResponse = $response->withHeader('Content-type', 'application/json')
+            ->withHeader('Access-Control-Allow-Origin','*')
+            ->withHeader('X-Status-Reason','Missing repo1 or repo2 params')
+            ->withStatus(400);
+        return $errorResponse;
+    }
+
     $repo1 = $params['repo1'];
     $repo2 = $params['repo2'];
 
     $Comparer = new \SchibstedApp\Comparer();
     $obj1 = $Comparer->buildRepoObject($repo1);
     $obj2 = $Comparer->buildRepoObject($repo2);
+
+    if(!$obj1 || !$obj2)
+    {
+        $response->getBody()->write(json_encode(array(
+            'code' => 404,
+            'message' => 'One of repos is not found'
+        )));
+
+        $errorResponse = $response->withHeader('Content-type', 'application/json')
+            ->withHeader('Access-Control-Allow-Origin','*')
+            ->withHeader('X-Status-Reason','One of repos is not found')
+            ->withStatus(404);
+        return $errorResponse;
+    }
+
     $data = $Comparer->compareStatistics($obj1,$obj2);
 
-    $newResponse = $response->withHeader('Content-type', 'application/json')->withHeader('Access-Control-Allow-Origin','*')->withStatus(200);
+    $newResponse = $response->withHeader('Content-type', 'application/json')
+        ->withHeader('Access-Control-Allow-Origin','*')
+        ->withStatus(200);
     $resWithEtag = $this->cache->withEtag($newResponse, md5(serialize($data)));
     $resWithExpires = $this->cache->withExpires($resWithEtag, time() + 3600);
     $resWithLastMod = $this->cache->withLastModified($resWithExpires, time() - 3600);

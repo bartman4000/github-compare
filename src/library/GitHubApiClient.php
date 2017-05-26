@@ -35,15 +35,37 @@ class GitHubApiClient
             'auth' => ['bartman4000', 'k00paa12']
         );
 
-        $response = $Client->request($method, "https://api.github.com".$resource, $options);
-        $this->logger->addInfo("Called github resource {$resource} with response ".($response->getStatusCode()." ".$response->getReasonPhrase()));
+        try {
+            $response = $Client->request($method, "https://api.github.com".$resource, $options);
+        } catch (GuzzleHttp\Exception\ClientException $e) {
+            $this->logger->addWarning("Called github resource {$resource} with response ".($e->getMessage()));
+            throw new \Exception($e->getMessage(), $e->getCode(), $e);
+        }
 
+        $this->logger->addInfo("Called github resource {$resource} with response ".($response->getStatusCode()." ".$response->getReasonPhrase()));
         return $response->getBody()->getContents();
     }
 
     public function get($resource)
     {
         return $this->call("GET", $resource);
+    }
+
+    public function isRepo($owner, $repo)
+    {
+        try {
+            $this->get("/repos/{$owner}/{$repo}");
+            return true;
+        } catch (\Exception $e)
+        {
+            if($e->getCode() == 404)
+            {
+                return false;
+            }
+            else{
+                throw new \Exception($e->getMessage(), $e->getCode(), $e);
+            }
+        }
     }
 
     public function getStarsCount($owner, $repo)
@@ -79,7 +101,7 @@ class GitHubApiClient
         try {
             $content = $this->get("/repos/{$owner}/{$repo}/releases/latest");
             $content = json_decode($content);
-        } catch (GuzzleHttp\Exception\ClientException $e)
+        } catch (\Exception $e)
         {
             $this->logger->addWarning($e->getMessage());
             if($e->getCode() == 404)

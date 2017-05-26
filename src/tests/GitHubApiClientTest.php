@@ -91,4 +91,13 @@ class GitHubApiClientTest extends TestCase
         $this->assertInternalType("object", $interval);
         $this->assertEquals(0,$interval->invert);
     }
+
+    public function testIsRepo()
+    {
+        $isRepo = $this->GitHubApiClient->isRepo('bull','shit');
+        $this->assertFalse($isRepo);
+
+        $isRepo = $this->GitHubApiClient->isRepo($this->testOwner, $this->testRepo);
+        $this->assertTrue($isRepo);
+    }
 }

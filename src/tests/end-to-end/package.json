@@ -1,0 +1,19 @@
+{
+  "name": "github-compare-tests",
+  "version": "1.0.0",
+  "description": "test of the rest Api of Github compare",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine-node spec --junitreport",
+    "test-env-test": "jasmine-node --config ENV test spec --junitreport"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "form-data": "2.1.2"
+  },
+  "devDependencies": {
+    "moment": "^2.17.1"
+  }
+}

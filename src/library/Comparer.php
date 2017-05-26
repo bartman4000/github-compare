@@ -35,6 +35,11 @@ class Comparer
 
         list($owner, $repo) = explode("/", $repoName, 2);
 
+        if(!$GitHubClient->isRepo($owner, $repo))
+        {
+            return false;
+        }
+
         $repoObject = new \stdClass();
         $repoObject->name = $repoName;
         $repoObject->forks = $GitHubClient->getForksCount($owner, $repo);

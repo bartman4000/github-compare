@@ -56,26 +56,21 @@ $app->post('/', function (Request $request, Response $response, $args) {
     $repo1 = $allPostVars['repo1'];
     $repo2 = $allPostVars['repo2'];
 
-//    $Comparer = new \GitHubCompare\Comparer();
-//    $obj1 = $Comparer->buildRepoObject($repo1);
-//    $obj2 = $Comparer->buildRepoObject($repo2);
-//    if(!$obj1 || !$obj2)
-//    {
-//        $errorResponse = $response->withHeader('Access-Control-Allow-Origin','*')
-//            ->withHeader('X-Status-Reason','One of repos is not found')
-//            ->withStatus(404);
-//
-//        return $this->view->render($errorResponse, 'error.html', [
-//            'title' => '404 Error',
-//            'error' => 'One of repos is not found'
-//        ]);
-//    }
-//    $data = $Comparer->compareStatistics($obj1,$obj2);
+    $Comparer = new \GitHubCompare\Comparer();
+    $obj1 = $Comparer->buildRepoObject($repo1);
+    $obj2 = $Comparer->buildRepoObject($repo2);
+    if(!$obj1 || !$obj2)
+    {
+        $errorResponse = $response->withHeader('Access-Control-Allow-Origin','*')
+            ->withHeader('X-Status-Reason','One of repos is not found')
+            ->withStatus(404);
 
-    $ApiClient = new InternalApiClient();
-    $json = $ApiClient->get("/compare", array('query' => array('repo1' => $repo1, 'repo2' => $repo2)));
-    $data = json_decode($json, true);
-
+        return $this->view->render($errorResponse, 'error.html', [
+            'title' => '404 Error',
+            'error' => 'One of repos is not found'
+        ]);
+    }
+    $data = $Comparer->compareStatistics($obj1,$obj2);
 
     $newResponse = $response->withHeader('Access-Control-Allow-Origin','*')
         ->withStatus(200);

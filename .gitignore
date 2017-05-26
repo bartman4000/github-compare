@@ -3,5 +3,4 @@
 .idea/
 src/composer.lock
 src/vendor/
-src/composer.json
 src/logs/

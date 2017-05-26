@@ -29,6 +29,26 @@ class Comparer
         $this->logger->pushHandler($file_handler);
     }
 
+    /**
+     *  @SWG\Definition(
+     *   definition="Stats",
+     *   type="object",
+     *       @SWG\Schema(
+     *           required={"name"},
+     *           @SWG\Property(property="name", type="string")
+     *           @SWG\Property(property="forks", format="int64", type="integer")
+     *           @SWG\Property(property="stars", format="int64", type="integer")
+     *           @SWG\Property(property="watchers", format="int64", type="integer")
+     *           @SWG\Property(property="latestRelease", type="string")
+     *           @SWG\Property(property="pullRequestOpen", type="string")
+     *           @SWG\Property(property="pullRequestClosed", type="string")
+     *           @SWG\Property(property="lastMerge", type="string")
+     *           @SWG\Property(property="updateDate", type="string")
+     *           @SWG\Property(property="points", format="int64", type="integer")
+     *           @SWG\Property(property="percent", format="int64", type="integer")
+     *       )
+     * )
+     */
     public function buildRepoObject($repoName)
     {
         $GitHubClient = new GitHubApiClient();

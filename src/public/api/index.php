@@ -48,13 +48,38 @@
  *         required={"comparison", "winner"},
  *         @SWG\Property(
  *             property="comparison",
- *             type="object"
+ *             type="object",
+ *                  @SWG\Property(
+ *                      property="repo1",
+ *                      type="array",
+ *                      @SWG\Items(ref="#/definitions/Stats")
+ *                  ),
+ *                  @SWG\Property(
+ *                      property="repo2",
+ *                      type="array",
+ *                      @SWG\Items(ref="#/definitions/Stats")
+ *                  )
  *         ),
  *         @SWG\Property(
  *             property="winner",
  *             type="string"
  *         )
- *     )
+ *     ),
+ *     @SWG\Definition(
+ *         definition="Stats",
+ *         type="object",
+ *           @SWG\Property(property="name", type="string"),
+ *           @SWG\Property(property="forks", format="int64", type="integer"),
+ *           @SWG\Property(property="stars", format="int64", type="integer"),
+ *           @SWG\Property(property="watchers", format="int64", type="integer"),
+ *           @SWG\Property(property="latestRelease", type="string"),
+ *           @SWG\Property(property="pullRequestOpen", type="string"),
+ *           @SWG\Property(property="pullRequestClosed", type="string"),
+ *           @SWG\Property(property="lastMerge", type="string"),
+ *           @SWG\Property(property="updateDate", type="string"),
+ *           @SWG\Property(property="points", format="int64", type="integer"),
+ *           @SWG\Property(property="percent", format="int64", type="integer")
+ *      )
  * )
  */
 

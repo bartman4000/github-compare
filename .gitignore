@@ -4,3 +4,4 @@
 src/composer.lock
 src/vendor/
 src/logs/
+src/config/config.php

@@ -36,9 +36,9 @@ class GitHubApiClient
     {
         $Client = new GuzzleHttp\Client();
         $options = array('headers' => [
-            'Content-Type'     => 'application/json',
-            ],
-            'auth' => ['bartman4000', 'k00paa12']
+            'Content-Type'  => 'application/json',
+            'Authorization' => 'token '.GITHUB_TOKEN
+            ]
         );
 
         $url = "https://api.github.com".$resource;

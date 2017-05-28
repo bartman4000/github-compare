@@ -1,11 +1,11 @@
 WEBAPI : end-to-end tests
 ================================
 
-Tests can be run using frisby, you need ``node`` and ``npm`` to be installed on you computer.
+Tests can be run using [frisby](http://frisbyjs.com/), you need [node](https://nodejs.org), [npm](https://www.npmjs.com/) and [jasmine](https://jasmine.github.io/) to be installed on you computer.
 
 ## Install ##
 
-1- First install the required dependencies byr running :
+1- First install the required dependencies by running :
 ```
 npm install
 ```

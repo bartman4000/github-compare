@@ -21,26 +21,26 @@ frisby.create('Test if API is up')
         })
     .toss();
 
-frisby.create('Test Api returns comaprison when 2 good params given')
+frisby.create('Test Api returns comparison when 2 good params given')
     .get(URL + '/compare?repo1='+repo1+'&repo2='+repo2)
     .addHeader('accept', 'application/json')
     .expectStatus(200)
-    .expectHeaderContains('content-type', 'application/json')
+    .expectHeaderContains('Content-Type', 'application/json')
     .expectJSONTypes({
         comparison: Object,
         winner: String
     })
     .toss();
 
-frisby.create('Test Api returns 400 when 1 param is missing')
+frisby.create('Test Api returns 404 when 1 param is missing')
     .get(URL + '/compare?repo1='+repo1)
     .addHeader('accept', 'application/json')
     .expectHeaderContains('content-type', 'application/json')
-    .expectHeader( 'x-status-reason', 'Missing repo1 or repo2 params')
-    .expectStatus(400)
+    .expectHeader( 'x-status-reason', 'One of repos is not found')
+    .expectStatus(404)
     .expectJSON({
-        code: 400,
-        message: 'Missing repo1 or repo2 params'
+        code: 404,
+        message: 'One of repos is not found'
     })
     .toss();
 

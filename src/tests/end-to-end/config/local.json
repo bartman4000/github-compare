@@ -1,5 +1,5 @@
 {
-  "api_url":"http://http://localhost:8080/api/",
+  "api_url":"http://localhost:8080/api/",
   "frisby":"/usr/local/lib/node_modules/frisby",
   "long_timeout": 100000,
   "timeout": 50000,

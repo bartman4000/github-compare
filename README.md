@@ -33,8 +33,8 @@ In **tests/end-to-end/README.md** you can find detailed info about preparing and
 Run application:
 ------------------------
 * Change `APP_HOST` values in **config/config.php** to desired host
-* In Dir **src/public** type `php -S <APP_HOST>` to make a 'quick start' where APP_HOST is value from **config/config.php** file.
-* Example: `php -S localhost:8080`
+* In Dir **src/public** type `php -S localhost:8080` to make a 'quick start'
+* In case you decide to change host, please update respectively files **config/config.php** and **tests/end-to-end/config/local.json**
 
 * GUI is under url **http://localhost:8080** then
 * API is under url **http://localhost:8080/api**

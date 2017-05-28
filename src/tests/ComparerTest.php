@@ -29,6 +29,7 @@ class ComparerTest extends TestCase
     public function testCompareStatistics()
     {
         $obj1 = new \stdClass();
+        $obj1->name = 'repo1';
         $obj1->forks = 5;
         $obj1->stars = 5;
         $obj1->watchers = 5;
@@ -37,9 +38,11 @@ class ComparerTest extends TestCase
         $obj1->pullRequestOpen = 5;
         $obj1->pullRequestClosed = 5;
         $obj1->lastMerge = '2017-04-11T08:12:05Z';
+        $obj1->updateDate = '2017-04-11T08:12:05Z';
         $obj1->points = 0;
 
         $obj2 = new \stdClass();
+        $obj2->name = 'repo2';
         $obj2->forks = 1;
         $obj2->stars = 1;
         $obj2->watchers = 1;
@@ -48,6 +51,7 @@ class ComparerTest extends TestCase
         $obj2->pullRequestOpen = 1;
         $obj2->pullRequestClosed = 1;
         $obj2->lastMerge = '2017-05-11T08:12:05Z'; //let's make this one bigger in second object
+        $obj2->updateDate = '2017-04-11T08:12:05Z';
         $obj2->points = 0;
 
         $this->Comparer->CompareStatistics($obj1,$obj2);

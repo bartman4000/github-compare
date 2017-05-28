@@ -27,12 +27,11 @@ Unit-Tests:
 
 End-to-End Tests:
 ------------------------
-In **tests/end-to-end/README.md** you can find detailed info about preparing and running ebd-to-end tests
+In **tests/end-to-end/README.md** you can find detailed info about preparing and running end-to-end tests
 
 
 Run application:
 ------------------------
-* Change `APP_HOST` values in **config/config.php** to desired host
 * In Dir **src/public** type `php -S localhost:8080` to make a 'quick start'
 * In case you decide to change host, please update respectively files **config/config.php** and **tests/end-to-end/config/local.json**
 

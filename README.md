@@ -17,7 +17,7 @@ Installation:
 ------------------
 
 * Download Composer Manager to root directory as it's described on [getcomposer.org](https://getcomposer.org) 
-* Install dependencies and autoloader by typing `php composer.phar install`
+* Install dependencies and autoloader by typing `php composer install`
 * If you want to run automatic tests download and install **Phpunit** as it's described on [phpunit.de](https://phpunit.de/) 
 
 
@@ -32,7 +32,7 @@ In **tests/end-to-end/README.md** you can find detailed info about preparing and
 
 Run application:
 ------------------------
-* In Dir **src/public** type `php -S localhost:8080` to make a 'quick start'
+* In Dir **public** type `php -S localhost:8080` to make a 'quick start'
 * In case you decide to change host, please update respectively files **config/config.php** and **tests/end-to-end/config/local.json**
 
 * GUI is under url **http://localhost:8080** then
@@ -45,7 +45,7 @@ API (auto-generated) documentation:
 * API is auto-documented using [Swagger](http://swagger.io/) adnotations
 * Swagger json is under **http://localhost:8080/swagger/swagger.php** url
 * To see Swagger documentation use [Swagger UI](http://swagger.io/swagger-ui/) tool. You can fast way and open 
-**/src/vendor/swagger-api/swagger-ui/dist/index.html** to get one without installation.
+**/vendor/swagger-api/swagger-ui/dist/index.html** to get one without installation.
 
 
 Comparison criteria

@@ -1,9 +1,6 @@
 Github Repositories Comparison
 ===================================
 
-Small sample application prepared by Bartek Olewiński as a part of job application in Shibsted
-
-
 Solutions and technologies used:
 ------------------
 * GUI and API are build on microframework [slim](https://www.slimframework.com)
